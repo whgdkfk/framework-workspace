@@ -1,9 +1,0 @@
-package com.kh.spring;
-
-import org.springframework.stereotype.Controller;
-
-@Controller
-@RequestMapping("test")
-public class TestController {
-
-}
