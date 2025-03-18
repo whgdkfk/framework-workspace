@@ -26,3 +26,7 @@ build/
 logs/
 *.log
 tmp/
+
+*.jar
+*.war
+# 압축파일들
