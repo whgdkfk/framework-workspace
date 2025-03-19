@@ -1,19 +1,56 @@
 package com.kh.spring.member.controller;
 
-import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.spring.member.model.dto.MemberDTO;
+import com.kh.spring.member.model.service.MemberService;
+import com.kh.spring.member.model.service.MemberServiceImpl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
+@RequiredArgsConstructor // 의존성 주입 생성자를 생성해주는 애노테이션(lombok)
 public class MemberController {
+	
+	// 내가 가진 bean과 연결해주는 것
+	// @Autowired
+	// 필드로 타입만 선언해놓음
+	private final MemberService memberService;
+	
+	/*
+	@Autowired
+	public void setMemberService(MemberService memberService) {
+		this.memberService = memberService;
+	}
+	*/
+	
+	/*
+	@Autowired
+	public MemberController(MemberService memberService) {
+		this.memberService = memberService;
+	}
+	*/
+	
+	
+	// 의존성 주업
+	// 1. 필드로 선언하고 Autowired Annotation을 단다.
+	// 2. setter를 만들어서 Autowired Annotation을 단다.
+	// 3. 생성자를 만들어서 생성자의 Autowired Annotation을 단다.(권장)
+	
 	/*
 	@RequestMapping(value="login")
 	public String login(HttpServletRequest request) {
@@ -37,7 +74,7 @@ public class MemberController {
 		return "main_page";
 	}
 	*/
-	
+
 	// 작업하기 편한 방법
 	/*
 	@PostMapping("login")
@@ -68,12 +105,116 @@ public class MemberController {
 	 * @param member
 	 * @return
 	 */
+	/*
+	// Request Handler(요청 처리기)
 	@PostMapping("login")
-	public String login(MemberDTO member) {
+	public String login(MemberDTO member, 
+						HttpSession session,
+						Model model) {
 		
-		log.info("이런 건 안 돼요~ {}", member); // header.jsp name="memberId", name="memberPw"
+		// log.info("이런 건 안 돼요~ {}", member); // header.jsp name="memberId", name="memberPw"
+		
+		/*
+		 * Controller 역할
+		 * 데이터 가공(Spring Framework가 대신 해줌)
+		 * 요청 처리(Service)
+		 * 응답 화면 지정
+		 */
+		/*
+		MemberDTO loginMember = memberService.login(member);
+		
+		if(loginMember != null) {
+			log.info("로그인 성공");
+		} else {
+			log.info("로그인 실패");
+		}
+
+		
+		if(loginMember != null) { // 성공했을 때
+			// sessionScope에 로그인 정보를 담아줌
+			session.setAttribute("loginMember", loginMember);
+			// 그 다음에
+			// main_page
+			// /WEB-INF/views/
+			// .jsp
+			// => 포워딩
+			// sendRedirect
+			
+			// localhost/spring  /
+			return "redirect:/";
+			
+		} else { // 실패했을 때
+			
+			// error_page
+			// requestScope에 에러 문구를 담아서 포워딩
+			// Spring에서는 Model 객체를 이용해서 RequestScope에 값을 담음
+			model.addAttribute("message", "로그인 실패");
+			
+			// 논리적인 경로(문자열)를 가지고 물리적인 경로(실제 위치)를 찾아간다.
+			// forwarding
+			// /WEB-INF/views/
+			// include/error_page
+			// .jsp
+			return "include/error_page";
+		}
+		
+		// return "main_page";
+	}
+	*/
+		
+	// 두 번째 방법) 반환 타입 ModelAndView로 돌아가기	
+	@PostMapping("login")
+	public ModelAndView login(MemberDTO member, 
+							  HttpSession session,
+							  ModelAndView mv) {
+		
+		MemberDTO loginMember = memberService.login(member);
+		
+		if(loginMember != null) {
+			session.setAttribute("loginMember", loginMember);
+			mv.setViewName("redirect:/");
+		} else {
+			mv.addObject("message", "로그인 실패")
+			  .setViewName("include/error_page");
+		}
+		return mv;
+	}
+	
+	@GetMapping("logout")
+	public ModelAndView logout(HttpSession session,
+					 		   ModelAndView mv) {
+		
+		session.removeAttribute("loginMember");
+		mv.setViewName("redirect:/");
+		return mv;
+	}
+	
+	@GetMapping("signup-form")
+	public String signupForm() {
+		// /WEB-INF/views/  member/signup-form  .jsp
+		return "member/signup-form";
+	}
+	
+	/**
+	 * 
+	 * @param member id
+	 * @return 성공 시 main 실패 시 error_page
+	 */
+	@PostMapping("signup")
+	public String join(MemberDTO member, HttpServletRequest request) {
+		/*
+		try {
+			request.setCharacterEncoding("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		*/
+		
+		// log.info("멤버 필드 찍어보기: {}", member);
+		memberService.signUp(member);
 		
 		return "main_page";
 	}
 	
+
 }
