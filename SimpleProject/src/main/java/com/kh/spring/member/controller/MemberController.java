@@ -265,6 +265,11 @@ public class MemberController {
 		return "redirect:my-page";
 	}
 	
+	// 탈퇴 구현 숙제로 하기
+	// 비밀번호 입력받음
+	// 비밀번호가 맞는지 검증 => 예외 발생시키기
+	// DELETE 성공했는지
+	
 	
 
 }

@@ -88,7 +88,7 @@
             <ul>
                 <li><a href="">HOME</a></li>
                 <li><a href="">공지사항</a></li>
-                <li><a href="">자유게시판</a></li>
+                <li><a href="boards">자유게시판</a></li> <!-- 보편적으로 복수형으로 만드는 것이 원칙 -->
                 <li><a href="">사진게시판</a></li>
             </ul>
         </div>

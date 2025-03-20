@@ -46,4 +46,12 @@
 	
 	<!-- mapper가 존재하는 패키지 -->
 	<mybatis-spring:scan base-package="com.kh.spring.member.model.dao"/>
+	
+	<!-- 파일 업로드 관련 bean 등록 -->
+	<bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+		  id="multipartResolver">
+		<property name="maxUploadSize" value="100000000"/>
+		<property name="maxInMemorySize" value="100000000"/>
+	</bean>
+	
 </beans>
