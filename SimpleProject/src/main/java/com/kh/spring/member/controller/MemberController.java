@@ -216,5 +216,55 @@ public class MemberController {
 		return "main_page";
 	}
 	
+	@GetMapping("my-page")
+	public String myPage() {
+		return "member/my_page";
+	}
+	
+	@PostMapping("update-member")
+	public String update(MemberDTO member, HttpSession session) {
+		// 1. Controller에서는 RequestMapping 애노테이션 및 요청 시 전달값이 잘 전달되는지 확인
+		/*
+		 * 1_1) 404 발생: mapping 값 잘못 적음
+		 * org.springframework.web.servlet.PageNotFound
+		 * - No mapping for POST /spring/update-member
+		 * 
+		 * 1-2) 405 발생: 앞단에선 POST / GET으로 요청을 보내놓고 메소드와 맞지 않은 애노테이션을 사용했을 때
+		 * Request method 'POST' not supported 
+		 * 
+		 * 1_3) 필드에 값이 들어오지 않는 경우
+		 */
+		log.info("사용자가 입력한 값: {}", member);
+		
+		// 2. 이번에 실행할 SQL문을 생각
+		// UPDATE문 ==> KH_MEMBER(MEMBER_ID)
+		// ID, PW, NAME, EMAIL, DATE
+		// 2_1) 매개변수 MemberDTO 타입의 memberId 필드값
+		// 2_2) SessionScope에 loginMember 키값에 memberId 필드값
+		// 		넘겨주어야 겠구나 +
+		
+		// 값들이 유효한 값인치 체크하기
+		// MemberId가 존재하는 아이디인지 체크하기
+		
+		// UPDATE KH_MEMBER SET MEMBER_NAME = 사용자가 입력한 이름, 
+		//					EMAIL = 사용자가 입력한 이메일
+		//			  WHERE MEMBER_ID = 사용자가 입력한 아이디
+		// UPDATE 수행의 결과 => PK를 조건으로 수행함 => 0 / 1
+		
+		// 수행에 성공했을 경우 =>
+		// my_page.jsp로 이동 + 갱신된 회원의 정보 출력
+		
+		// id를 가지고 다시 조회 => login 메서드 재활용
+		
+		// 수행에 실패했을 경우 =>
+		// message를 담아서 error_page로 포워딩
+		// 예외 발생 => 예외처리기로 위임
+		
+		memberService.update(member, session);
+		
+		return "redirect:my-page";
+	}
+	
+	
 
 }
