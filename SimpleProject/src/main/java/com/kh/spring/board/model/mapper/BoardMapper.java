@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.session.RowBounds;
 
 import com.kh.spring.board.model.dto.BoardDTO;
+import com.kh.spring.reply.model.dto.ReplyDTO;
 
 @Mapper
 public interface BoardMapper {
@@ -19,6 +20,10 @@ public interface BoardMapper {
 	List<BoardDTO> selectBoardList(RowBounds rowBounds);
 
 	BoardDTO selectBoard(int boardNo);
+
+	List<ReplyDTO> selectReply(int boardNo);
+	
+	BoardDTO selectBoardAndReply(int board);
 	
 	int updateBoard(BoardDTO board);
 	

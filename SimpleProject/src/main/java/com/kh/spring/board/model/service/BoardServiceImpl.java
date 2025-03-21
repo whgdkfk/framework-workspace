@@ -3,13 +3,17 @@ package com.kh.spring.board.model.service;
 import java.io.File;
 import java.io.IOException;
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +21,9 @@ import com.kh.spring.board.model.dto.BoardDTO;
 import com.kh.spring.board.model.mapper.BoardMapper;
 import com.kh.spring.exception.AuthenticationException;
 import com.kh.spring.member.model.dto.MemberDTO;
+import com.kh.spring.reply.model.dto.ReplyDTO;
+import com.kh.spring.util.model.dto.PageInfo;
+import com.kh.spring.util.template.Pagination;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,15 +86,41 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public List<BoardDTO> selectBoardList(int currentPage) {
-		boardMapper.selectTotalCount();
+	public Map<String, Object> selectBoardList(int currentPage) {
 		
-		return null;
+		List<BoardDTO> boards = new ArrayList();
+		Map<String, Object> map = new HashMap();
+		
+		int count = boardMapper.selectTotalCount();
+		PageInfo pi = Pagination.getPageInfo(count, currentPage, 5, 5);
+		
+		if(count != 0) {
+			RowBounds rb = new RowBounds((currentPage - 1) * 5, 5);
+			boards = boardMapper.selectBoardList(rb);
+		}
+		
+		map.put("boards", boards);
+		map.put("pageInfo", pi);
+		
+		return map;
 	}
 
 	@Override
 	public BoardDTO selectBoard(int boardNo) {
-		return null;
+		
+		// 1절
+		// BoardDTO board = boardMapper.selectBoard(boardNo);
+		
+		// 2절
+		// List<ReplyDTO> replyList = boardMapper.selectReply(boardNo);
+		// board.setReplyList(replyList);
+		
+		// 3절
+		BoardDTO board = boardMapper.selectBoardAndReply(boardNo);
+		if(board == null) {
+			throw new InvalidParameterException("존재하지 않는 게시글입니다.");
+		}
+		return board;
 	}
 
 	@Override
@@ -102,7 +135,6 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	public void insertBoard(BoardDTO board, MultipartFile file) {
-		// TODO Auto-generated method stub
 		
 	}
 

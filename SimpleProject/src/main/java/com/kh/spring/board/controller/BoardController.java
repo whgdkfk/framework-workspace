@@ -1,9 +1,13 @@
 package com.kh.spring.board.controller;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,7 +31,8 @@ public class BoardController {
 	
 	// ?page=1
 	@GetMapping("boards")
-	public String toBoardList(@RequestParam(name="page", defaultValue="1") int page) {
+	public String toBoardList(@RequestParam(name="page", defaultValue="1") int page,
+							  Model model) {
 		// 한 페이지에 5개 보여줌
 		// 버튼 5개 보여줌
 		// 총 게시글 개수 == SELECT COUNT(*) FROM TB_SPRING_BOARD
@@ -35,7 +40,9 @@ public class BoardController {
 		if(page < 1) {
 			throw new InvalidParameterException("어디 감히");
 		}
-		boardService.selectBoardList(page);
+		Map<String, Object> map = boardService.selectBoardList(page);
+		
+		model.addAttribute("map", map);
 		
 		// 첨부 파일
 		return "board/board_list";
@@ -74,4 +81,17 @@ public class BoardController {
 		return mv;
 	}
 	
+	@GetMapping("boards/{id}")
+	public ModelAndView goBoard(@PathVariable(name="id") int boardNo,
+								ModelAndView mv) {
+		// log.info("게시글 번호: {}", boardNo);
+		if(boardNo < 1) {
+			throw new InvalidParameterException("비정상적인 접근입니다.");
+		}
+		BoardDTO board = boardService.selectBoard(boardNo);
+		mv.addObject("board", board).setViewName("board/board_detail");
+		
+		return mv;
+	}
+
 }
