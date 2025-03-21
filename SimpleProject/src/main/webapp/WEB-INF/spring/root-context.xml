@@ -45,7 +45,7 @@
 	-->
 	
 	<!-- mapper가 존재하는 패키지 -->
-	<mybatis-spring:scan base-package="com.kh.spring.member.model.dao"/>
+	<mybatis-spring:scan base-package="com.kh.spring.member.model.dao, com.kh.spring.board.model.mapper"/>
 	
 	<!-- 파일 업로드 관련 bean 등록 -->
 	<bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver"

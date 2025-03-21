@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.spring.board.model.mapper.BoardMapper">	
+	
+	<!-- mapper의 메서드명과 동일하게 작성 -->
+	<insert id="insertBoard"
+			parameterType="com.kh.spring.board.model.dto.BoardDTO">
+		INSERT
+		  INTO
+		  		TB_SPRING_BOARD(
+		  		BOARD_TITLE
+		  	  , BOARD_CONTENT
+		  	  , BOARD_WRITER
+		  	  , CHANGE_NAME
+		  		)
+		VALUES
+				(
+				#{ boardTitle }
+			  , #{ boardContent }
+			  , #{ boardWriter }
+			  , #{ changeName }	
+				)	
+	</insert>
+	
+</mapper> 

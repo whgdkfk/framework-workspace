@@ -2,6 +2,8 @@ package com.kh.spring.board.model.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.spring.board.model.dto.BoardDTO;
@@ -40,6 +42,8 @@ public interface BoardService {
 	
 	// 게시글 삭제(delete인 척하고 update 할 것 STATUS 컬럼값 N으로 바꿀 것)
 	void deleteBoard(int boardNo);
+
+	void insertBoard(BoardDTO board, MultipartFile file, HttpSession session);
 	
 	// ---------------------------
 	
