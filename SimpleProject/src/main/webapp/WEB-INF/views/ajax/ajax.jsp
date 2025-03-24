@@ -46,16 +46,14 @@
 		.addEventListener('click', () => {
 			이벤트 발생 시 수행할 코드
 		});
-		
 		==
-			
 		3. Content 값 변경
+		
 		.innerHTML = '대입하고 싶은 값';
 		.html('대입하고 싶은 값');
-		
 		==
-		
 		4. style 변경
+		
 		.style.세부스타일속성 = '스타일속성값';	
 		.css('스타일속성', '스타일속성값');
 	</pre>
@@ -135,7 +133,7 @@
 			const inputValue = $('#ajax-input').val();
 			$.ajax({
 				url: `test?input=\${inputValue}`,
-				type: 'GET',
+				type: 'get',
 				success: function(result) {
 					
 					// console.log(result);	

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.spring.member.model.dto.MemberDTO;
@@ -270,6 +271,7 @@ public class MemberController {
 	// 비밀번호가 맞는지 검증 => 예외 발생시키기
 	// DELETE 성공했는지
 	
+	@ResponseBody
 	@GetMapping("id-check")
 	public String idCheck(@RequestParam(name="memberId") String memberId) {
 		// 응답을 어떻게 돌려줄 것인지
