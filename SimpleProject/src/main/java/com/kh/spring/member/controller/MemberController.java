@@ -270,6 +270,15 @@ public class MemberController {
 	// 비밀번호가 맞는지 검증 => 예외 발생시키기
 	// DELETE 성공했는지
 	
-	
-
+	@GetMapping("id-check")
+	public String idCheck(@RequestParam(name="memberId") String memberId) {
+		// 응답을 어떻게 돌려줄 것인지
+		// 조회 결과가 있다 / 없다
+		//		   NNNNY / NNNNN
+		
+		memberService.idCheck(memberId);
+		// SELECT MEMBER_ID FROM KH_MEMBER WHERE MEMBER_ID = 사용자가입력한아이디
+		
+		return memberService.idCheck(memberId);
+	}
 }

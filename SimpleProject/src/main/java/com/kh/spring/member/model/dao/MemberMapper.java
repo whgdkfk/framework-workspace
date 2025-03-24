@@ -42,5 +42,8 @@ public interface MemberMapper {
 	int update(MemberDTO member);
 	
 	int delete(MemberDTO member);
+	
+	@Select("SELECT MEMBER_ID FROM KH_MEMBER WHERE MEMBER_ID = #{ memberId }")
+	String idCheck(String memberId);
 
 }

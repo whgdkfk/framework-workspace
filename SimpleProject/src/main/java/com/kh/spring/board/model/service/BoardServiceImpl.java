@@ -35,15 +35,15 @@ public class BoardServiceImpl implements BoardService {
 	
 	private final BoardMapper boardMapper;
 	
-	@Override
-	public void insertBoard(BoardDTO board, MultipartFile file, HttpSession session) {
-		
+	private void validateUser(HttpSession session, BoardDTO board) {
 		// 1. 권한 체크
 		MemberDTO loginMember = (MemberDTO)session.getAttribute("loginMember");
 		if(loginMember != null && !loginMember.getMemberId().equals(board.getBoardWriter())) {
 			throw new AuthenticationException("권한 없는 접근입니다.");
 		}
-		
+	}
+	
+	private void validateContent(BoardDTO board) {
 		// 2. 유효성 검사
 		if(board.getBoardTitle() == null || board.getBoardTitle().trim().isEmpty() || 
 		   board.getBoardContent() == null || board.getBoardContent().trim().isEmpty() ||
@@ -52,33 +52,58 @@ public class BoardServiceImpl implements BoardService {
 		}
 		
 		// 2-2.
+		/*
+		 * <, >, \, &
+		 */
+		String boardTitle = board.getBoardTitle()
+								 .replaceAll("<", "&lt;")
+								 .replaceAll(">", "&gt;")
+								 .replaceAll("\n", "<br>");
+		
+		String boardContent = board.getBoardContent()
+								   .replaceAll("<", "&lt;")
+								   .replaceAll(">", "&gt;")
+								   .replaceAll("\n", "<br>");
+		
+		board.setBoardTitle(boardTitle);
+		board.setBoardContent(boardContent);
+	}
+	
+	private void transferFile(HttpSession session, MultipartFile file, BoardDTO board) {
+		// 이름 바꾸기
+		// KH_ + 현재 시간 + 랜덤 숫자 + 원본 파일 확장자
+		StringBuilder sb = new StringBuilder();
+		sb.append("KH_");
+		String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+		// log.info("현재 시간: {}", currentTime);
+		sb.append(currentTime);
+		sb.append("_");
+		int random = (int)(Math.random() * 900) + 100;
+		sb.append(random);
+		String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+		sb.append(ext);
+		// log.info("바뀐 파일명: {}", sb.toString());
+		
+		ServletContext application = session.getServletContext();
+		
+		String savePath = application.getRealPath("/resources/upload_files/");
+		try {
+			file.transferTo(new File(savePath + sb.toString()));
+		} catch (IllegalStateException | IOException e) {
+			e.printStackTrace();
+		}
+		board.setChangeName("/spring/resources/upload_files/" + sb.toString());
+	}
+	
+	@Override
+	public void insertBoard(BoardDTO board, MultipartFile file, HttpSession session) {
+		
+		validateUser(session, board);
+		validateContent(board);
 		
 		// 3) 파일 유무 체크 // 이름 바꾸기 + 저장
 		if(!file.getOriginalFilename().isEmpty()) {
-			
-			// 이름 바꾸기
-			// KH_ + 현재 시간 + 랜덤 숫자 + 원본 파일 확장자
-			StringBuilder sb = new StringBuilder();
-			sb.append("KH_");
-			String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-			// log.info("현재 시간: {}", currentTime);
-			sb.append(currentTime);
-			sb.append("_");
-			int random = (int)(Math.random() * 900) + 100;
-			sb.append(random);
-			String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-			sb.append(ext);
-			// log.info("바뀐 파일명: {}", sb.toString());
-			
-			ServletContext application = session.getServletContext();
-			
-			String savePath = application.getRealPath("/resources/upload_files/");
-			try {
-				file.transferTo(new File(savePath + sb.toString()));
-			} catch (IllegalStateException | IOException e) {
-				e.printStackTrace();
-			}
-			board.setChangeName("/spring/resources/upload_files/" + sb.toString());
+			transferFile(session, file, board);
 		}
 		
 		boardMapper.insertBoard(board);
@@ -136,6 +161,30 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public void insertBoard(BoardDTO board, MultipartFile file) {
 		
+	}
+
+	@Override
+	public Map<String, Object> doSearch(Map<String, String> map) {
+		// 유효성 검사 map에서 get("condition") / get("keyword") 값이 비었나 안 비었나 확인
+		
+		int searchedCount = boardMapper.searchedCount(map);
+		// log.info("몇 개: {}", searchedCount);
+		
+		PageInfo pi = Pagination.getPageInfo(searchedCount, 
+											 Integer.parseInt(map.get("currentPage")), 
+											 3, 
+											 3);
+		
+		RowBounds rb = new RowBounds((pi.getCurrentPage() - 1) * 3, 3);
+		
+		List<BoardDTO> boards = boardMapper.selectSearchList(map, rb);
+		
+		Map<String, Object> returnValue = new HashMap();
+		returnValue.put("boards", boards);
+		returnValue.put("pageInfo", pi);
+		
+		return returnValue;
+	
 	}
 
 }

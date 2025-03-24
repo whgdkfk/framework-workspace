@@ -23,6 +23,7 @@ public interface MemberService { // 계약서
 
 	// 아이디 중복 체크
 	
+	String idCheck(String memberId);
 	
 	// 이메일 인증
 	
