@@ -38,4 +38,6 @@ public interface BoardMapper {
 	
 	List<BoardDTO> selectSearchList(Map<String, String> map, RowBounds rb); 
 	
+	int insertReply(ReplyDTO reply);
+	
 }
