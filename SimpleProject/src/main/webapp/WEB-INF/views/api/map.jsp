@@ -5,7 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <title>지도</title>
-	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=db388b472ea5bfb33fd29679f28cce19"></script>
+	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey="></script>
 </head>
 <body>
 	<jsp:include page="../include/header.jsp"></jsp:include>
